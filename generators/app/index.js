@@ -6,15 +6,15 @@ const yosay = require('yosay')
 const mkdirp = require('mkdirp')
 const _s = require('underscore.string')
 
-// const defaultValidators = {
-//   notNull: (input) => {
-//     if (input) {
-//       return true
-//     } else {
-//       return 'Please enter a valid input'
-//     }
-//   }
-// }
+const defaultValidators = {
+  notNull: (input) => {
+    if (input) {
+      return true
+    } else {
+      return 'Please enter a valid input'
+    }
+  }
+}
 
 module.exports = class extends Generator {
   // note: arguments and options should be defined in the constructor.
@@ -46,7 +46,7 @@ module.exports = class extends Generator {
 
   prompting () {
     // Have Yeoman greet the user.
-    this.log(yosay('Welcome to the best ' + chalk.red('generator-cmmc-netpie-webapp') + ' generator!'))
+    this.log(yosay(chalk.red('generator-cmmc-mqtt-webapp') + ' generator!'))
 
     const prompts = [
       {
@@ -54,6 +54,36 @@ module.exports = class extends Generator {
         name: 'name',
         message: 'Your project name:',
         default: this.options.appname || this.appname // Default to current folder name
+      }, {
+        type: 'input',
+        name: 'mqttHostName',
+        message: 'Your mqtt host name',
+        default: this.config.get('mqttHostName') || 'beta.cmmc.io',
+        validate: defaultValidators.notNull
+      }, {
+        type: 'input',
+        name: 'mqttPort',
+        message: 'Your mqtt websocket port',
+        default: this.config.get('mqttPort') || '59001',
+        validate: defaultValidators.notNull
+      }, {
+        type: 'input',
+        name: 'mqttPrefix',
+        message: 'Your app prefix',
+        default: this.config.get('mqttPrefix') || 'MARU/',
+        validate: defaultValidators.notNull
+      }, {
+        type: 'input',
+        name: 'mqttDeviceName',
+        message: 'Your app device name',
+        default: this.config.get('mqttDeviceName') || 'YOUR-NAME-001',
+        validate: defaultValidators.notNull
+      }, {
+        type: 'input',
+        name: 'mqttClientId',
+        message: 'your mqttClientId',
+        default: this.config.get('mqttClientId') || 'cmmc-ws-' + (10e3 * Math.random()).toFixed(4),
+        validate: defaultValidators.notNull
       }
     ]
 
@@ -86,11 +116,11 @@ module.exports = class extends Generator {
   _writingScripts () {
     const templateOptions = {
       appname: this.props.name,
-      appId: this.props.appId,
-      appKey: this.props.appKey,
-      appSecret: this.props.appSecret,
-      defaultTopic: this.props.defaultTopic,
-      deviceAlias: this.props.deviceAlias
+      mqttHostName: this.props.mqttHostName,
+      mqttPort: this.props.mqttPort,
+      mqttPrefix: this.props.mqttPrefix,
+      mqttClientId: this.props.mqttClientId,
+      mqttDeviceName: this.props.mqttDeviceName
     }
 
     this.fs.copyTpl(this.templatePath('main.js'), this.destinationPath('app/scripts/main.js'), templateOptions)
@@ -99,11 +129,11 @@ module.exports = class extends Generator {
   _writingHtml () {
     const templateOptions = {
       appname: this.props.name,
-      appId: this.props.appId,
-      appKey: this.props.appKey,
-      appSecret: this.props.appSecret,
-      defaultTopic: this.props.defaultTopic,
-      deviceAlias: this.props.deviceAlias
+      mqttHostName: this.props.mqttHostName,
+      mqttPort: this.props.mqttPort,
+      mqttPrefix: this.props.mqttPrefix,
+      mqttClientId: this.props.mqttClientId,
+      mqttDeviceName: this.props.mqttDeviceName
     }
 
     this.fs.copyTpl(this.templatePath('index.html'),
@@ -113,11 +143,11 @@ module.exports = class extends Generator {
   _writingConfig () {
     const templateOptions = {
       appname: this.props.name,
-      appId: this.props.appId,
-      appKey: this.props.appKey,
-      appSecret: this.props.appSecret,
-      defaultTopic: this.props.defaultTopic,
-      deviceAlias: this.props.deviceAlias
+      mqttHostName: this.props.mqttHostName,
+      mqttPort: this.props.mqttPort,
+      mqttPrefix: this.props.mqttPrefix,
+      mqttClientId: this.props.mqttClientId,
+      mqttDeviceName: this.props.mqttDeviceName
     }
 
     this.fs.copyTpl(this.templatePath('config.js'),

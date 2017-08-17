@@ -1,6 +1,6 @@
 {
   "name": "generator-cmmc-mqtt-webapp",
-  "version": "0.0.5a",
+  "version": "0.0.1a",
   "description": "CMMC MQTT webapp generator",
   "homepage": "cmmc.io",
   "author": {

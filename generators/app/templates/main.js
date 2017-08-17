@@ -1,25 +1,21 @@
-const Config = {}
-const Global = {}
+const Global = {
+  mqtt: new Paho.MQTT.Client(Config.hostname, Number(Config.port), Config.clientId)
+}
 
-Config.hostname = 'beta.cmmc.io'
-Config.port = 59001
-Config.clientId = Math.random() * 1000
-
-Global.mqtt = new Paho.MQTT.Client(Config.hostname, Number(Config.port), 'ws-' + Config.clientId)
 const mqtt = Global.mqtt
 
-mqtt.publish = function (topic, msg) {
-  console.log('call publish')
-  const message = new Paho.MQTT.Message('Hello')
-  message.destinationName = 'World'
-  mqtt.send(message)
+mqtt.publish = function (topic, payload, opts) {
+  opts = opts || {}
+  mqtt.send(topic, payload, opts.qos || 0, opts.retain || false)
 }
 
 const onConnected = function () {
-  console.log('mqtt connected')
-  mqtt.subscribe('MARU/#')
-  clearInterval(Global.timer1)
+  mqtt.subscribe('<%= mqttPrefix + mqttDeviceName %>/status', {qos: 0})
+  mqtt.subscribe('<%= mqttPrefix + mqttDeviceName %>/$/#', {qos: 0})
+
   hideConnectingIcon()
+
+  $('.publish-wrapper').removeClass('is-hidden')
   $('#incoming-messages').html('connected')
 }
 
@@ -29,10 +25,12 @@ const onMessage = function (message) {
   const retained = message.retained
   const payloadString = message.payloadString
 
+  /*
   console.log('Topic:     ' + topic)
   console.log('QoS:       ' + qos)
   console.log('Retained:  ' + retained)
   console.log('Message Arrived: ' + payloadString)
+  */
 
   const $p = $('<p class="title">' + payloadString + '</p>')
   var dateString = moment().format('h:mm:ss a')
@@ -48,26 +46,16 @@ const onConnectionLost = function (responseObject) {
 }
 
 function hideConnectingIcon () {
-  $('.netpie-connecting').hide()
+  $('.mqtt-connecting').hide()
+}
+
+const onConnectFailure = function () {
+  alert('mqtt connect failed')
+  hideConnectingIcon()
 }
 
 function connectServer () {
-  mqtt.connect({onSuccess: onConnected, onFailure: function () { console.log('mqtt connect failed')}})
+  mqtt.connect({timeout: 10, onSuccess: onConnected, onFailure: onConnectFailure})
   mqtt.onMessageArrived = onMessage
   mqtt.onConnectionLost = onConnectionLost
-
-  const startTime = new Date().getTime()
-  Global.startedOn = startTime
-  Global.timeoutOn = startTime + (10 * 1000)
-  Global.timer1 = setInterval(function () {
-    const currentTime = new Date().getTime()
-    if (currentTime > Global.timeoutOn) {
-      alert('timeout')
-      clearInterval(Global.timer1)
-      hideConnectingIcon()
-    }
-    else {
-      console.log('wating... ', Global.timeoutOn - currentTime)
-    }
-  }, 100)
 }

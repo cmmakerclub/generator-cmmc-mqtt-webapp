@@ -34,14 +34,25 @@
       </h2>
       <div class="notification">
         <p>appName: <%= appname %></p>
+        <p>mqttHostName: <%= mqttHostName %></p>
+        <p>mqttPort: <%= mqttPort %></p>
+        <p>mqttClientId: <%= mqttClientId %></p>
+        <p>mqttPrefix: <%= mqttPrefix %></p>
+        <p>mqttPubTopic: <%= mqttPrefix + mqttDeviceName %>/$/command</p>
+        <p>mqttSubTopic: <%= mqttPrefix + mqttDeviceName %>/status</p>
       </div>
 
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="publish-on-button button is-primary">ON</button>
-        </div>
-        <div class="control">
-          <button class="publish-off-button button-off button is-danger">OFF</button>
+      <div class="publish-wrapper notification is-hidden">
+        <div class="container">
+          <h3 id="colors" class="title is-4 bd-anchor-title"> Publish: </h3>
+          <div class="field is-grouped">
+            <div class="control">
+              <button class="publish-on-button button is-primary">ON</button>
+            </div>
+            <div class="control">
+              <button class="publish-off-button button-off button is-danger">OFF</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -84,10 +95,10 @@
     // var topic = $('#topic-input').val()
     // var payload = $('#payload-input').val()
     $('.publish-on-button').click(function () {
-      microgear.publish(Config.topic, 'ON')
+      Global.mqtt.publish('<%= mqttPrefix + mqttDeviceName %>/$/command', 'ON')
     })
     $('.publish-off-button').click(function () {
-      microgear.publish(Config.topic, 'OFF')
+      Global.mqtt.publish('<%= mqttPrefix + mqttDeviceName %>/$/command', 'OFF')
     })
   })
 </script>
