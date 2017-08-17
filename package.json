@@ -1,7 +1,7 @@
 {
-  "name": "generator-cmmc-netpie-webapp",
+  "name": "generator-cmmc-mqtt-webapp",
   "version": "0.0.5a",
-  "description": "CMMC NETPIE webapp generator",
+  "description": "CMMC MQTT webapp generator",
   "homepage": "cmmc.io",
   "author": {
     "name": "Nat",
@@ -53,6 +53,6 @@
       "node": true
     }
   },
-  "repository": "cmmakerclub/generator-cmmc-netpie-webapp",
+  "repository": "cmmakerclub/generator-cmmc-mqtt-webapp",
   "license": "MIT"
 }

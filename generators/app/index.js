@@ -6,15 +6,16 @@ const yosay = require('yosay')
 const mkdirp = require('mkdirp')
 const _s = require('underscore.string')
 
-const defaultValidators = {
-  notNull: (input) => {
-    if (input) {
-      return true
-    } else {
-      return 'Please enter a valid input'
-    }
-  }
-}
+// const defaultValidators = {
+//   notNull: (input) => {
+//     if (input) {
+//       return true
+//     } else {
+//       return 'Please enter a valid input'
+//     }
+//   }
+// }
+
 module.exports = class extends Generator {
   // note: arguments and options should be defined in the constructor.
   constructor (args, opts) {
@@ -53,47 +54,6 @@ module.exports = class extends Generator {
         name: 'name',
         message: 'Your project name:',
         default: this.options.appname || this.appname // Default to current folder name
-      },
-      {
-        type: 'input',
-        name: 'appId',
-        message: 'Your netpie appId:',
-        default: this.config.get('appId'),
-        validate: defaultValidators.notNull
-      },
-      {
-        type: 'input',
-        name: 'appKey',
-        message: 'Your netpie appKey:',
-        default: this.config.get('appKey'),
-        validate: defaultValidators.notNull
-      },
-      {
-        type: 'input',
-        name: 'appSecret',
-        default: this.config.get('appSecret'),
-        message: 'Your netpie appSecret:',
-        validate: defaultValidators.notNull
-      },
-      {
-        type: 'input',
-        name: 'deviceAlias',
-        default: this.config.get('deviceAlias') || 'hello-cmmc-alias',
-        message: 'Your netpie device alias',
-        validate: defaultValidators.notNull
-      },
-      {
-        type: 'input',
-        name: 'defaultTopic',
-        default: this.config.get('defaultTopic') || '/gearname/topic1',
-        message: 'your default publish topic',
-        validate: function (input) {
-          if (input.indexOf('/gearname/') === 0) {
-            return true
-          } else {
-            return 'topic must be started with /gearname/'
-          }
-        }
       }
     ]
 
@@ -172,8 +132,8 @@ module.exports = class extends Generator {
   }
 
   _writingLibraries () {
-    this.fs.copyTpl(this.templatePath('libs/microgear.js'),
-      this.destinationPath('app/libs/microgear.js'))
+    // this.fs.copyTpl(this.templatePath('libs/microgear.js'),
+    //   this.destinationPath('app/libs/microgear.js'))
   }
 
   _writingBower () {
@@ -184,9 +144,11 @@ module.exports = class extends Generator {
     }
 
     bowerJson.dependencies['jquery'] = '~2.1.4'
+    bowerJson.dependencies['paho-mqtt'] = '*'
     bowerJson.dependencies['bulma'] = '^0.5.0'
     bowerJson.dependencies['moment-timezone'] = '^0.5.13'
     bowerJson.dependencies['components-font-awesome'] = '^4.7.0'
+
     // if (this.includeJQuery) {  }
 
     this.fs.writeJSON('bower.json', bowerJson)

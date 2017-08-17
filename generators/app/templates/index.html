@@ -28,15 +28,12 @@
 <div class="container">
   <section class="section">
     <div class="container">
-      <h1 class="title">NETPIE.io<i class="fa-li fa fa-spinner fa-spin netpie-connecting"></i></h1>
+      <h1 class="title">MQTT <i class="fa-li fa fa-spinner fa-spin mqtt-connecting"></i></h1>
       <h2 class="subtitle">
         webapp template
       </h2>
       <div class="notification">
         <p>appName: <%= appname %></p>
-        <p>appId: <%= appId %></p>
-        <p>appKey: <%= appKey %></p>
-        <p>appSecret: <%= appSecret %></p>
       </div>
 
       <div class="field is-grouped">
@@ -70,12 +67,12 @@
 <script src="../bower_components/jquery/dist/jquery.min.js"></script>
 <script src="../bower_components/moment/moment.js"></script>
 <script src="../bower_components/moment-timezone/moment-timezone.js"></script>
+<script src="../bower_components/paho-mqtt/src/mqttws31.js"></script>
 <!-- bower:js -->
 <!-- endbower -->
 <!-- endbuild -->
 
 <!-- build:js scripts/main.js -->
-<script src="libs/microgear.js"></script>
 <script src="scripts/config.js"></script>
 <script src="scripts/main.js"></script>
 <!-- endbuild -->
@@ -83,7 +80,7 @@
 
 <script type="text/javascript">
   jQuery('document').ready(function ($) {
-    connect_netpie()
+    connectServer()
     // var topic = $('#topic-input').val()
     // var payload = $('#payload-input').val()
     $('.publish-on-button').click(function () {

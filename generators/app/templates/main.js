@@ -1,66 +1,73 @@
 const Config = {}
 const Global = {}
 
-Config.appId = '<%= appId %>'
-Config.appKey = '<%= appKey %>'
-Config.appSecret = '<%= appSecret %>'
-Config.topic = '<%= defaultTopic %>'
-Config.alias = '<%= deviceAlias %>'
+Config.hostname = 'beta.cmmc.io'
+Config.port = 59001
+Config.clientId = Math.random() * 1000
 
-console.log(Config)
-microgear = Microgear.create({
-  key: Config.appKey,
-  secret: Config.appSecret,
-})
+Global.mqtt = new Paho.MQTT.Client(Config.hostname, Number(Config.port), 'ws-' + Config.clientId)
+const mqtt = Global.mqtt
 
-microgear.on('connected', function () {
-  console.log('netpie connected')
-  microgear.setAlias(Config.alias)
-  microgear.subscribe('/gearname/+')
+mqtt.publish = function (topic, msg) {
+  console.log('call publish')
+  const message = new Paho.MQTT.Message('Hello')
+  message.destinationName = 'World'
+  mqtt.send(message)
+}
+
+const onConnected = function () {
+  console.log('mqtt connected')
+  mqtt.subscribe('MARU/#')
   clearInterval(Global.timer1)
-  hideNetpieConnectingIcon()
+  hideConnectingIcon()
   $('#incoming-messages').html('connected')
-})
+}
 
-microgear.on('present', function (event) {
-  console.log(event)
-})
+const onMessage = function (message) {
+  const topic = message.destinationName
+  const qos = message.qos
+  const retained = message.retained
+  const payloadString = message.payloadString
 
-microgear.on('absent', function (event) {
-  console.log(event)
-})
+  console.log('Topic:     ' + topic)
+  console.log('QoS:       ' + qos)
+  console.log('Retained:  ' + retained)
+  console.log('Message Arrived: ' + payloadString)
 
-microgear.on('message', function (topic, msg) {
-  const $p = $('<p class="title">' + msg + '</p>')
+  const $p = $('<p class="title">' + payloadString + '</p>')
   var dateString = moment().format('h:mm:ss a')
   $('#incoming-messages').html($p)
-  $('.message-header-text').text('[' + dateString + '] Message: ' + topic)
-})
+  $('.message-header-text').text('[' + dateString + '] Message: ' + topic + (retained ? ' (retained)' : ''))
+}
 
-function hideNetpieConnectingIcon () {
+// called when the client loses its connection
+const onConnectionLost = function (responseObject) {
+  if (responseObject.errorCode !== 0) {
+    console.log('onConnectionLost:' + responseObject.errorMessage)
+  }
+}
+
+function hideConnectingIcon () {
   $('.netpie-connecting').hide()
 }
 
-function connect_netpie () {
+function connectServer () {
+  mqtt.connect({onSuccess: onConnected, onFailure: function () { console.log('mqtt connect failed')}})
+  mqtt.onMessageArrived = onMessage
+  mqtt.onConnectionLost = onConnectionLost
+
   const startTime = new Date().getTime()
   Global.startedOn = startTime
   Global.timeoutOn = startTime + (10 * 1000)
   Global.timer1 = setInterval(function () {
     const currentTime = new Date().getTime()
     if (currentTime > Global.timeoutOn) {
-      alert(Config.appId + ' is an invalid appId.')
+      alert('timeout')
       clearInterval(Global.timer1)
-      hideNetpieConnectingIcon()
+      hideConnectingIcon()
     }
     else {
       console.log('wating... ', Global.timeoutOn - currentTime)
     }
   }, 100)
-  microgear.resettoken(function (err) {
-    if (err) {
-      console.log('reset token err', err)
-    } else {
-      microgear.connect(Config.appId)
-    }
-  })
 }
