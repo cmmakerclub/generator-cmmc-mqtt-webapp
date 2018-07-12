@@ -7,7 +7,7 @@ First, install [Yeoman](http://yeoman.io) and generator-cmmc-netpie-webapp using
 
 ```bash
 npm install -g yo bower
-npm install -g generator-cmmc-netpie-webapp
+npm install -g generator-cmmc-mqtt-webapp
 ```
 
 Then generate your new project:
