@@ -13,7 +13,7 @@ npm install -g generator-cmmc-mqtt-webapp
 Then generate your new project:
 
 ```bash
-yo cmmc-netpie-webapp appname
+yo cmmc-mqtt-webapp appname
 ```
 
 ## License
